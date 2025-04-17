@@ -16,7 +16,10 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(${PROJECT_NAME}
 src/main.cpp
- "src/Variables.h" "src/Variables.cpp" "src/Colors.h" "src/Colors.cpp")
+src/Variables.cpp
+src/Colors.cpp
+src/Triangle.cpp
+src/Star.cpp "src/Slote.h" "src/Slote.cpp")
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-network sfml-audio)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)

@@ -28,7 +28,6 @@ int main()
         sloteFrame.emplace_back(slote);
     }
 
-
     while (window.isOpen())
     {
         Event event;
