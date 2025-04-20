@@ -3,7 +3,7 @@
 using namespace sf;
 
 Triangle::Triangle()
-	:m_Size(0.f, 0.f)
+	:m_Size(0.f)
 {
 
 }
@@ -20,17 +20,17 @@ Vector2f Triangle::getPoint(size_t index) const
 	{
 		case 0:
 		{
-			point = { m_Size.x * 0.5f, 0.f};
+			point = { m_Size * 0.5f, 0.f};
 			break;
 		}
 		case 1:
 		{
-			point = {0.f , m_Size.y };
+			point = {0.f , m_Size};
 			break;
 		}
 		case 2:
 		{
-			point = { m_Size.x  , m_Size.y };
+			point = { m_Size  , m_Size};
 			break;
 		}
 		default:
@@ -39,13 +39,18 @@ Vector2f Triangle::getPoint(size_t index) const
 	return point;
 }
 
-void Triangle::setSize(Vector2f size)
+MyShape* Triangle::clone()
+{
+	return new Triangle(*this);
+}
+
+void Triangle::setSize(float size)
 {
 	m_Size = size;
 	update();
 }
 
-Vector2f Triangle::getSize() const
+float Triangle::getSize() const
 {
 	return m_Size;
 }

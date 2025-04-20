@@ -1,16 +1,16 @@
 #pragma once
 #include "MyShape.h"
 
-class Triangle :public MyShape
+class Circle :public MyShape
 {
 public:
-	Triangle();
+	Circle();
 	virtual size_t getPointCount() const override;
 	virtual sf::Vector2f getPoint(size_t index) const override;
 	MyShape* clone() override;
-	void setSize(float size);
-	float getSize() const;
+	void setRadius(float radius);
+	float getRadius() const;
 private:
-	float m_Size;
-	static const size_t m_PointCount = 3;
+	static const size_t m_PointCount = 30;
+	float m_Radius;
 };

@@ -19,7 +19,12 @@ src/main.cpp
 src/Variables.cpp
 src/Colors.cpp
 src/Triangle.cpp
-src/Star.cpp "src/Slote.h" "src/Slote.cpp")
+src/Star.cpp
+src/Slote.cpp 
+src/SloteMachine.cpp
+src/MyShape.cpp
+src/Rectangle.cpp
+src/Circle.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-network sfml-audio)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)

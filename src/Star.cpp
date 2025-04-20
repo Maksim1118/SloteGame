@@ -21,6 +21,11 @@ Vector2f  Star::getPoint(size_t index) const
 	return Vector2f(m_OuterSize/2 + radius * cos(angle * 2.f - PI/2.f), m_OuterSize/2 + radius * sin(angle * 2.f - PI / 2.f));
 }
 
+MyShape* Star::clone()
+{
+	return new Star(*this);
+}
+
 void  Star::setSize(float innerSize, float outerSize)
 {
 	m_InnerSize = innerSize;
