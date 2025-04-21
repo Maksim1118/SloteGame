@@ -8,6 +8,8 @@ extern const sf::Color red;
 extern const sf::Color purple;
 extern const sf::Color pink;
 extern const sf::Color blue;
+extern const sf::Color cornflowerBlue;
+extern const sf::Color cyan;
 
 using Colors = std::array<sf::Color, 4>;
 

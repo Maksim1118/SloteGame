@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 
+#include "Generator.h"
 #include "Colors.h"
 #include "Variables.h"
 #include "Star.h"
@@ -9,12 +10,10 @@
 #include "Circle.h"
 #include "Rectangle.h"
 
-
 using namespace sf;
 using namespace std;
 
 SloteMachine::SloteMachine()
-	:m_Slots(countSlots)
 {
 	fillSymbols();
 	fillSlotes();
@@ -25,6 +24,10 @@ SloteMachine::~SloteMachine()
 	for (const auto& symbol : m_Symbols)
 	{
 		delete symbol;
+	}
+	for (const auto& slote : m_Slots)
+	{
+		delete slote;
 	}
 }
 
@@ -37,7 +40,7 @@ void SloteMachine::draw(sf::RenderTarget& target)
 {
 	for (const auto& slote : m_Slots)
 	{
-		slote.draw(target);
+		slote->draw(target);
 	}
 }
 
@@ -72,7 +75,7 @@ void SloteMachine::fillSymbols()
 
 void SloteMachine::fillSlotes()
 {
-	for (auto& slote : m_Slots)
+	for (int i = 0; i < countSlots; ++i)
 	{
 		vector<MyShape*> symbols;
 		for (const auto& symbol : m_Symbols)
@@ -80,15 +83,30 @@ void SloteMachine::fillSlotes()
 			symbols.emplace_back(symbol->clone());
 		}
 		shuffleSymbols(symbols);
-		slote.setSymbols(symbols);
+		Slote* newSlote = new Slote(symbols);
+		newSlote->setAccelerate(generateAccelerate());
+		m_Slots.emplace_back(newSlote);
+	}
+}
+
+float SloteMachine::generateAccelerate()
+{
+	return generateRandomValue(2.f, 5.f);
+}
+
+void SloteMachine::sloteSpin(float diff)
+{
+	for (auto& slote : m_Slots)
+	{
+		slote->spin(diff);
 	}
 }
 
 void SloteMachine::shuffleSymbols(vector<MyShape*>& symbols)
 {
-	for (size_t i = symbols.size() - 1; i > 0; --i)
+	for (int i = symbols.size() - 1; i > 0; --i)
 	{
-		size_t j = rand() % (i + 1);
+		int j = generateRandomValue(0, i);
 		swap(symbols[i], symbols[j]);
 	}
 }
