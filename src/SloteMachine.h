@@ -17,6 +17,9 @@ public:
 	void setState(State* newState);
 	std::vector<Slote*>& getSlots();
 	void run(float diff);
+	bool isRunning();
+	void start();
+	void stop();
 private:
 	void fillSymbols();
 	void fillSlotes();
@@ -25,6 +28,7 @@ private:
 	std::vector<MyShape*> m_Symbols;
 
 	State* m_Selector;
+	bool m_isRunning;
 	static const size_t countSlots = 3;
 	std::vector<Slote*> m_Slots;
 };

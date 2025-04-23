@@ -9,16 +9,17 @@
 #include "Triangle.h"
 #include "Circle.h"
 #include "Rectangle.h"
-#include "SpinningState.h"
+#include "WaitingState.h"
 
 using namespace sf;
 using namespace std;
 
 SloteMachine::SloteMachine()
+	:m_isRunning(false)
 {
 	fillSymbols();
 	fillSlotes();
-	m_Selector = new SpinningState(this);
+	m_Selector = new WaitingState(this);
 }
 
 SloteMachine::~SloteMachine()
@@ -61,6 +62,20 @@ void SloteMachine::run(float diff)
 	m_Selector->update(diff);
 }
 
+bool SloteMachine::isRunning()
+{
+	return m_isRunning;
+}
+
+void SloteMachine::start()
+{
+	m_isRunning = true;
+}
+
+void SloteMachine::stop()
+{
+	m_isRunning = false;
+}
 
 void SloteMachine::fillSymbols()
 {

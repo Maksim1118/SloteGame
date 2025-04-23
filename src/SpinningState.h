@@ -12,5 +12,6 @@ public:
 	bool exit() override;
 private:
 	void spin(float diff);
+	void start();
 	SloteMachine* m_Machine;
 };

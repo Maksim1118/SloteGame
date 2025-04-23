@@ -1,4 +1,5 @@
 #include "WaitingState.h"
+#include "SpinningState.h"
 
 using namespace std;
 
@@ -10,18 +11,13 @@ WaitingState::WaitingState(SloteMachine* machine)
 
 void WaitingState::update(float diff)
 {
-	wait();
+	if (exit())
+	{
+		m_Machine->setState(new SpinningState(m_Machine));
+	}
 }
 
 bool WaitingState::exit()
 {
-	return true;
-}
-
-void WaitingState::wait()
-{
-	/*for (const auto& slote : m_Slots)
-	{
-		slote->startSpin();
-	}*/
+	return m_Machine->isRunning();
 }

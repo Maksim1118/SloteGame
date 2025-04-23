@@ -75,6 +75,13 @@ int main()
             {
                 window.close();
             }
+            if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Left)
+            {
+                if (butStart.isPos(mousePos))
+                {
+                    machine.start();
+                }
+            }
         }
         float deltaTime = clock.restart().asSeconds();
         machine.run(deltaTime);

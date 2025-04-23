@@ -11,9 +11,9 @@ public:
 	void setPosition(sf::Vector2f pos);
 	void setColor(sf::Color color);
 	void update(const sf::Vector2f mousePos) override;
+	bool isPos(const sf::Vector2f mousePos) const override;
 	void draw(sf::RenderTarget& target) override;
 private:
-	bool isPos(const sf::Vector2f mousePos) const override;
 	void textPos();
 	sf::RectangleShape m_Shape;
 

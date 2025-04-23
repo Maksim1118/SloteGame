@@ -11,6 +11,5 @@ public:
 	void update(float diff) override;
 	bool exit() override;
 private:
-	void wait();
 	SloteMachine* m_Machine;
 };
