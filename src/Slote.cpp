@@ -19,7 +19,7 @@ const float bottomMargin = 20.f;
 
 
 Slote::Slote(std::vector<MyShape*>& symbols)
-	:m_Symbols(symbols), m_Id(nextId++), m_A(0.f), m_V(0.f), m_State(SloteState::accelerate), m_PosY(0.f), m_IsCorrectPos(true)
+	:m_Symbols(symbols), m_Id(nextId++), m_A(0.f), m_V(0.f), m_PosY(0.f), m_IsCorrectPos(true), m_IsSpinning(false)
 {
 	size_t countSymbols = m_Symbols.size();
 	float totalHeight = symbolSize * m_Symbols.size();
@@ -44,15 +44,12 @@ void Slote::setAccelerate(const float accelerate)
 
 void Slote::spin(float diff)
 {
-	switch (m_State)
+	if (m_IsSpinning)
 	{
-		case SloteState::wait:
+		switch (m_State)
 		{
-			break;
-		}
 		case SloteState::accelerate:
 		{
-			m_IsCorrectPos = false;
 			accelerating(diff);
 			if (!isAccelerate())
 			{
@@ -82,11 +79,26 @@ void Slote::spin(float diff)
 			correctPos(diff);
 			if (m_IsCorrectPos)
 			{
-				m_State = SloteState::wait;
+				m_IsSpinning = false;
 			}
 			break;
 		}
+		default:
+			break;
+		}
 	}
+}
+
+bool Slote::isSpinStoped()
+{
+	return m_IsCorrectPos;
+}
+
+void Slote::startSpin()
+{
+	m_IsSpinning = true;
+	m_IsCorrectPos = false;
+	m_State = SloteState::accelerate;
 }
 
 

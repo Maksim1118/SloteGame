@@ -9,6 +9,7 @@
 #include "Triangle.h"
 #include "Circle.h"
 #include "Rectangle.h"
+#include "SpinningState.h"
 
 using namespace sf;
 using namespace std;
@@ -17,6 +18,7 @@ SloteMachine::SloteMachine()
 {
 	fillSymbols();
 	fillSlotes();
+	m_Selector = new SpinningState(this);
 }
 
 SloteMachine::~SloteMachine()
@@ -43,6 +45,22 @@ void SloteMachine::draw(sf::RenderTarget& target)
 		slote->draw(target);
 	}
 }
+
+void SloteMachine::setState(State* newState)
+{
+	m_Selector = newState;
+}
+
+std::vector<Slote*>& SloteMachine::getSlots()
+{
+	return m_Slots;
+}
+
+void SloteMachine::run(float diff)
+{
+	m_Selector->update(diff);
+}
+
 
 void SloteMachine::fillSymbols()
 {
@@ -94,13 +112,13 @@ float SloteMachine::generateAccelerate()
 	return generateRandomValue(2.f, 5.f);
 }
 
-void SloteMachine::sloteSpin(float diff)
-{
-	for (auto& slote : m_Slots)
-	{
-		slote->spin(diff);
-	}
-}
+//void SloteMachine::sloteSpin(float diff)
+//{
+//	for (auto& slote : m_Slots)
+//	{
+//		slote->spin(diff);
+//	}
+//}
 
 void SloteMachine::shuffleSymbols(vector<MyShape*>& symbols)
 {
