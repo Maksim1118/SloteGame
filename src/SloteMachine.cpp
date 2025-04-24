@@ -122,9 +122,48 @@ void SloteMachine::fillSlotes()
 	}
 }
 
+void SloteMachine::fillWinCombinations()
+{
+	for (int i = 0; i < countWinCombination; ++i)
+	{
+		vector<MyShape*> combination;
+		do
+		{
+			combination = generateWinCombination();
+		} while (!isUniqueCombination(combination));
+
+		m_WinCombinations.emplace_back(combination);
+	}
+}
+
 float SloteMachine::generateAccelerate()
 {
 	return generateRandomValue(2.f, 5.f);
+}
+
+bool SloteMachine::isUniqueCombination(vector<MyShape*> generatedCombination)
+{
+	for (const auto& combination : m_WinCombinations)
+	{
+		for (int i = 0; i < combination.size(); ++i)
+		{
+			if(combination[i] == generatedCombination[i])
+				return false;
+		}
+	}
+	return true;
+}
+
+vector<MyShape*>& SloteMachine::generateWinCombination()
+{
+	int countSymbols = m_Symbols.size();
+	vector<MyShape*> winSymbols;
+	for (int i = 0; i < countSlots; ++i)
+	{
+		int index = generateRandomValue(0, countSymbols-1);
+		winSymbols.emplace_back(m_Symbols[index]->clone());
+	}
+	return winSymbols;
 }
 
 //void SloteMachine::sloteSpin(float diff)

@@ -19,6 +19,7 @@ public:
 	void spin(float diff);
 	bool isSpinStoped();
 	void startSpin();
+	void stopSpin();
 	void draw(sf::RenderTarget& target) const;
 private:
 	void setPosition();

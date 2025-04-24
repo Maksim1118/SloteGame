@@ -101,6 +101,11 @@ void Slote::startSpin()
 	m_State = SloteState::accelerate;
 }
 
+void Slote::stopSpin()
+{
+	m_State = SloteState::deccelerate;
+}
+
 
 void Slote::setPosition()
 {

@@ -13,5 +13,7 @@ public:
 private:
 	void spin(float diff);
 	void start();
+	void stop();
+	bool m_NeedStop;
 	SloteMachine* m_Machine;
 };

@@ -81,6 +81,11 @@ int main()
                 {
                     machine.start();
                 }
+                
+                else if (butStop.isPos(mousePos))
+                {
+                    machine.stop();
+                }
             }
         }
         float deltaTime = clock.restart().asSeconds();
