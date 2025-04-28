@@ -8,7 +8,7 @@ using namespace sf;
 Circle::Circle()
 	:m_Radius(0.f)
 {
-
+	m_Id = 4;
 }
 
 size_t Circle::getPointCount() const
@@ -34,6 +34,11 @@ void Circle::setRadius(float radius)
 {
 	m_Radius = radius;
 	update();
+}
+
+Vector2f Circle::getCenter()
+{
+	return { getPosition().x + m_Radius, getPosition().y + m_Radius };
 }
 
 float Circle::getRadius() const

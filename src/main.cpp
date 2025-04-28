@@ -25,6 +25,10 @@ int main()
 
     SloteMachine machine;
 
+    RenderTexture mask;
+    mask.create(sloteSize.x * machine.getCountSlots() + sloteOutlineThickness * (machine.getCountSlots() + 1),
+        sloteSize.y + sloteOutlineThickness * 2);
+
     vector<RectangleShape> sloteFrame;
     for (int i = 0; i < machine.getCountSlots(); ++i)
     {
@@ -37,13 +41,9 @@ int main()
         sloteFrame.emplace_back(slote);
     }
 
-    RenderTexture mask;
-    mask.create(sloteSize.x* machine.getCountSlots() + sloteOutlineThickness * (machine.getCountSlots() + 1), 
-        sloteSize.y + sloteOutlineThickness * 2);
-
     Text startText;
     startText.setString("start");
-    startText.setFont(ResourceManager::getInstance().getFont(FontName::START));
+    startText.setFont(ResourceManager::getInstance().getFont());
     startText.setFillColor(red);
     startText.setCharacterSize(startTextSize);
 
@@ -54,7 +54,7 @@ int main()
 
     Text stopText;
     stopText.setString("stop");
-    stopText.setFont(ResourceManager::getInstance().getFont(FontName::STOP));
+    stopText.setFont(ResourceManager::getInstance().getFont());
     stopText.setFillColor(red);
     stopText.setCharacterSize(stopTextSize);
 
@@ -63,8 +63,27 @@ int main()
     butStop.setSize(stopButtSize);
     butStop.setColor(lightGray);
 
+    Text winText;
+    winText.setFont(ResourceManager::getInstance().getFont());
+    winText.setFillColor(darkGray);
+    winText.setCharacterSize(winTextSize);
+    winText.setPosition(winTextPos);
+
+    Text balanceText;
+    balanceText.setFont(ResourceManager::getInstance().getFont());
+    balanceText.setFillColor(darkGray);
+    balanceText.setCharacterSize(balanceTextSize);
+    balanceText.setPosition(balanceTextPos);
+
+    Text betText;
+    betText.setFont(ResourceManager::getInstance().getFont());
+    betText.setFillColor(darkGray);
+    betText.setCharacterSize(betTextSize);
+    betText.setPosition(betTextPos);
+
     Clock clock;
     Vector2f mousePos;
+
     while (window.isOpen())
     {
         Event event;
@@ -90,6 +109,10 @@ int main()
         }
         float deltaTime = clock.restart().asSeconds();
         machine.run(deltaTime);
+        Statistic statistic = machine.getStatistic();
+        betText.setString("Bet: " + to_string(statistic.getBet()));
+        balanceText.setString("Balance: " + to_string(statistic.getBalance()));
+        winText.setString("Win: " + to_string(statistic.getWin()));
         butStart.update(mousePos);
         butStop.update(mousePos);
 
@@ -106,6 +129,9 @@ int main()
         window.draw(sprite);
         butStart.draw(window);
         butStop.draw(window);
+        window.draw(winText);
+        window.draw(balanceText);
+        window.draw(betText);
         window.display();
     }
 }

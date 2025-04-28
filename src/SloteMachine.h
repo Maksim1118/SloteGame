@@ -1,12 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <set>
 #include "Slote.h"
 #include "MyShape.h"
 #include "State.h"
-
-using Combinations = std::set<std::vector<MyShape*>>;
+#include "Combination.h"
+#include "Statistic.h"
 
 class SloteMachine
 {
@@ -19,6 +18,9 @@ public:
 	/*void sloteSpin(float diff);*/
 	void setState(State* newState);
 	std::vector<Slote*>& getSlots();
+	std::vector<Combination> getWinCombinations() const;
+	Statistic getStatistic() const;
+	int getCountSymbols();
 	void run(float diff);
 	bool isRunning();
 	void start();
@@ -27,17 +29,24 @@ private:
 	void fillSymbols();
 	void fillSlotes();
 	void fillWinCombinations();
+	void fillAllCombinations();
 	float generateAccelerate();
-	bool isUniqueCombination(std::vector<MyShape*> generatedCombination);
-	std::vector<MyShape*> & generateWinCombination();
-	void shuffleSymbols(std::vector<MyShape*>& symbols);
+
+	template<typename T>
+	void shuffle(std::vector<T>& vec);
 	std::vector<MyShape*> m_Symbols;
 
-	Combinations m_WinCombinations;
+	std::vector<Combination> m_WinCombinations;
+	std::vector<Combination> m_AllCombinations;
 
+	SloteControlFlags m_Flags;
 	State* m_Selector;
-	bool m_isRunning;
+
+	Statistic m_Statistic;
+
 	static const size_t countSlots = 3;
-	static const size_t countWinCombination = 5;
+	static const int balance = 800;
+	const int bet = 20;
+	static const size_t countWinCombinations = 60;
 	std::vector<Slote*> m_Slots;
 };

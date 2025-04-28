@@ -20,6 +20,8 @@ public:
 	bool isSpinStoped();
 	void startSpin();
 	void stopSpin();
+	std::vector<MyShape*> getSymbols() const;
+	MyShape* getSymbol(int index) const;
 	void draw(sf::RenderTarget& target) const;
 private:
 	void setPosition();

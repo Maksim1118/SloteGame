@@ -18,7 +18,7 @@ const float topMargin = 20.f;
 const float bottomMargin = 20.f;
 
 
-Slote::Slote(std::vector<MyShape*>& symbols)
+Slote::Slote(vector<MyShape*>& symbols)
 	:m_Symbols(symbols), m_Id(nextId++), m_A(0.f), m_V(0.f), m_PosY(0.f), m_IsCorrectPos(true), m_IsSpinning(false)
 {
 	size_t countSymbols = m_Symbols.size();
@@ -104,6 +104,34 @@ void Slote::startSpin()
 void Slote::stopSpin()
 {
 	m_State = SloteState::deccelerate;
+}
+
+vector<MyShape*> Slote::getSymbols() const
+{
+	int offsetIndex = 4 - round(m_PosY);
+	vector<MyShape*> sortSymbols;
+	for (int i = offsetIndex; i < m_Symbols.size(); ++i)
+	{
+		sortSymbols.emplace_back(m_Symbols[i]);
+	}
+	for (int i = 0; i < offsetIndex; ++i)
+	{
+		sortSymbols.emplace_back(m_Symbols[i]);
+	}
+
+	for (const auto& sort : sortSymbols)
+	{
+		cout << sort->getID();
+	}
+	cout << endl;
+	return sortSymbols;
+}
+
+MyShape* Slote::getSymbol(int index) const
+{
+	int offsetIndex = 4 - round(m_PosY);
+	int adjustIndex = (index + offsetIndex) % m_Symbols.size();
+	return m_Symbols[adjustIndex];
 }
 
 

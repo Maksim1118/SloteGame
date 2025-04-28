@@ -5,7 +5,7 @@ using namespace sf;
 Rectangle::Rectangle()
 	:m_Size(0.f, 0.f)
 {
-
+	m_Id = 3;
 }
 
 size_t Rectangle::getPointCount() const
@@ -52,6 +52,11 @@ void Rectangle::setSize(Vector2f size)
 MyShape* Rectangle::clone()
 {
 	return new Rectangle(*this);
+}
+
+sf::Vector2f Rectangle::getCenter()
+{
+	return { getPosition().x + m_Size.x / 2.f, getPosition().y + m_Size.y / 2.f };
 }
 
 Vector2f Rectangle::getSize() const

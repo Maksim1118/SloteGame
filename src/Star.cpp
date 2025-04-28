@@ -6,7 +6,7 @@ using namespace sf;
 Star::Star()
 	:m_InnerSize(0.f), m_OuterSize(0.f)
 {
-
+	m_Id = 1;
 }
 
 size_t Star::getPointCount() const
@@ -24,6 +24,11 @@ Vector2f  Star::getPoint(size_t index) const
 MyShape* Star::clone()
 {
 	return new Star(*this);
+}
+
+sf::Vector2f Star::getCenter()
+{
+	return { getPosition().x + m_OuterSize / 2.f, getPosition().y + m_OuterSize / 2.f };
 }
 
 void  Star::setSize(float innerSize, float outerSize)

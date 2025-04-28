@@ -2,14 +2,13 @@
 #include <vector>
 
 #include "State.h"
-#include "SloteMachine.h"
 
 class WaitingState : public State
 {
 public:
-	WaitingState(SloteMachine* machine);
-	void update(float diff) override;
+	WaitingState(SloteMachine* machine, SloteControlFlags& flags);
+	void update(float diff, Statistic& statistic) override;
+	void updateStatistic(Statistic& statistic);
 	bool exit() override;
-private:
-	SloteMachine* m_Machine;
+	void draw(sf::RenderTarget& target)const override;
 };

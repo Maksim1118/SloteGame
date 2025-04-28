@@ -14,3 +14,12 @@ const sf::Vector2f startButtSize = { 300.f,120.f };
 const float stopTextSize = 40.f;
 const sf::Vector2f stopButtPos = { 1300.f,600.f };
 const sf::Vector2f stopButtSize = { 300.f,120.f };
+
+extern const float winTextSize = 40.f;
+extern const sf::Vector2f winTextPos = { 50.f, 400.f };
+
+extern const float balanceTextSize = 30.f;
+extern const sf::Vector2f balanceTextPos = { 50.f, 250.f };
+
+extern const float betTextSize = 40.f;
+extern const sf::Vector2f betTextPos = { 50.f, 550.f };

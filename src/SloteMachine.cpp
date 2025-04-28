@@ -1,6 +1,8 @@
 #include "SloteMachine.h"
 
 #include <stdexcept>
+#include <iostream>
+#include <algorithm>
 
 #include "Generator.h"
 #include "Colors.h"
@@ -15,11 +17,15 @@ using namespace sf;
 using namespace std;
 
 SloteMachine::SloteMachine()
-	:m_isRunning(false)
+	:m_Flags{false, false, false}
 {
 	fillSymbols();
 	fillSlotes();
-	m_Selector = new WaitingState(this);
+	fillAllCombinations();
+	fillWinCombinations();
+	m_Selector = new WaitingState(this, m_Flags);
+	m_Statistic.setBalance(balance);
+	m_Statistic.setBet(bet);
 }
 
 SloteMachine::~SloteMachine()
@@ -39,12 +45,13 @@ size_t SloteMachine::getCountSlots()
 	return countSlots;
 }
 
-void SloteMachine::draw(sf::RenderTarget& target)
+void SloteMachine::draw(RenderTarget& target)
 {
-	for (const auto& slote : m_Slots)
+	/*for (const auto& slote : m_Slots)
 	{
 		slote->draw(target);
-	}
+	}*/
+	m_Selector->draw(target);
 }
 
 void SloteMachine::setState(State* newState)
@@ -52,29 +59,34 @@ void SloteMachine::setState(State* newState)
 	m_Selector = newState;
 }
 
-std::vector<Slote*>& SloteMachine::getSlots()
+vector<Slote*>& SloteMachine::getSlots()
 {
 	return m_Slots;
 }
 
+int SloteMachine::getCountSymbols()
+{
+	return m_Symbols.size();
+}
+
 void SloteMachine::run(float diff)
 {
-	m_Selector->update(diff);
+	m_Selector->update(diff, m_Statistic);
 }
 
 bool SloteMachine::isRunning()
 {
-	return m_isRunning;
+	return false;
 }
 
 void SloteMachine::start()
 {
-	m_isRunning = true;
+	m_Flags.startSlote = true;
 }
 
 void SloteMachine::stop()
 {
-	m_isRunning = false;
+	m_Flags.stopSlote = true;
 }
 
 void SloteMachine::fillSymbols()
@@ -115,7 +127,7 @@ void SloteMachine::fillSlotes()
 		{
 			symbols.emplace_back(symbol->clone());
 		}
-		shuffleSymbols(symbols);
+		shuffle(symbols);
 		Slote* newSlote = new Slote(symbols);
 		newSlote->setAccelerate(generateAccelerate());
 		m_Slots.emplace_back(newSlote);
@@ -124,15 +136,32 @@ void SloteMachine::fillSlotes()
 
 void SloteMachine::fillWinCombinations()
 {
-	for (int i = 0; i < countWinCombination; ++i)
+	shuffle(m_AllCombinations);
+	for (int i = 0; i < countWinCombinations; ++i)
 	{
-		vector<MyShape*> combination;
-		do
-		{
-			combination = generateWinCombination();
-		} while (!isUniqueCombination(combination));
+		m_WinCombinations.emplace_back(m_AllCombinations[i]);
+	}
+}
 
-		m_WinCombinations.emplace_back(combination);
+void SloteMachine::fillAllCombinations()
+{
+	int totalUniqueCombinations = pow(m_Symbols.size(), countSlots);
+	if (countWinCombinations > totalUniqueCombinations)
+	{
+		throw std::invalid_argument("countWinCombinations exceeds the number of possible unique combinations.");
+	}
+	int countSymbols = m_Symbols.size();
+	for (int i = 0; i < totalUniqueCombinations; ++i)
+	{
+		vector<int> symbols;
+		int temp = i;
+		for (int j = 0; j < countSlots; ++j)
+		{
+			int index = temp % countSymbols;
+			symbols.emplace_back(m_Symbols[index]->getID());
+			temp /= countSymbols;
+		}
+		m_AllCombinations.emplace_back(symbols, generateRandomValue(20, 100));
 	}
 }
 
@@ -141,30 +170,16 @@ float SloteMachine::generateAccelerate()
 	return generateRandomValue(2.f, 5.f);
 }
 
-bool SloteMachine::isUniqueCombination(vector<MyShape*> generatedCombination)
+vector<Combination> SloteMachine::getWinCombinations() const
 {
-	for (const auto& combination : m_WinCombinations)
-	{
-		for (int i = 0; i < combination.size(); ++i)
-		{
-			if(combination[i] == generatedCombination[i])
-				return false;
-		}
-	}
-	return true;
+	return m_WinCombinations;
 }
 
-vector<MyShape*>& SloteMachine::generateWinCombination()
+Statistic SloteMachine::getStatistic() const
 {
-	int countSymbols = m_Symbols.size();
-	vector<MyShape*> winSymbols;
-	for (int i = 0; i < countSlots; ++i)
-	{
-		int index = generateRandomValue(0, countSymbols-1);
-		winSymbols.emplace_back(m_Symbols[index]->clone());
-	}
-	return winSymbols;
+	return m_Statistic;
 }
+
 
 //void SloteMachine::sloteSpin(float diff)
 //{
@@ -174,12 +189,13 @@ vector<MyShape*>& SloteMachine::generateWinCombination()
 //	}
 //}
 
-void SloteMachine::shuffleSymbols(vector<MyShape*>& symbols)
+template <typename T>
+void SloteMachine::shuffle(vector<T>& vec)
 {
-	for (int i = symbols.size() - 1; i > 0; --i)
+	for (int i = vec.size() - 1; i > 0; --i)
 	{
 		int j = generateRandomValue(0, i);
-		swap(symbols[i], symbols[j]);
+		swap(vec[i], vec[j]);
 	}
 }
 

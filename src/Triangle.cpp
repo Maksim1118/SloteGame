@@ -5,7 +5,7 @@ using namespace sf;
 Triangle::Triangle()
 	:m_Size(0.f)
 {
-
+	m_Id = 2;
 }
 
 size_t Triangle::getPointCount() const
@@ -42,6 +42,11 @@ Vector2f Triangle::getPoint(size_t index) const
 MyShape* Triangle::clone()
 {
 	return new Triangle(*this);
+}
+
+sf::Vector2f Triangle::getCenter()
+{
+	return { getPosition().x + m_Size / 2.f, getPosition().y + m_Size / 2.f };
 }
 
 void Triangle::setSize(float size)

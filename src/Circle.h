@@ -9,6 +9,7 @@ public:
 	virtual sf::Vector2f getPoint(size_t index) const override;
 	MyShape* clone() override;
 	void setRadius(float radius);
+	sf::Vector2f getCenter() override;
 	float getRadius() const;
 private:
 	static const size_t m_PointCount = 30;

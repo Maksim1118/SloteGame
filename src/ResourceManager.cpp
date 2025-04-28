@@ -16,27 +16,25 @@ void ResourceManager::load()
 		cerr << "Resources have been loaded\n";
 	}
 
-	m_MapFont[FontName::START] = loadFont("Fonts/pixelFont.ttf");
-	m_MapFont[FontName::STOP] = loadFont("Fonts/pixelFont.ttf");
+	loadFont("Fonts/pixelFont.ttf");
 
 	m_isLoad = true;
 }
 
-sf::Font* ResourceManager::loadFont(const std::string& path)
+void ResourceManager::loadFont(const std::string& path)
 {
-	Font* font = new Font();
-	if (!font->loadFromFile(path))
+	m_Font = new Font();
+	if (!m_Font->loadFromFile(path))
 	{
 		cerr << "error loading font at this path: " << path << endl;
-		delete font;
-		return nullptr;
+		delete m_Font;
+		m_Font = nullptr;
 	}
-	return font;
 }
 
-sf::Font& ResourceManager::getFont(FontName name)
+sf::Font& ResourceManager::getFont()
 {
-	return *m_MapFont.at(name);
+	return *m_Font;
 }
 
 ResourceManager::ResourceManager()
