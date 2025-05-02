@@ -14,17 +14,31 @@ FetchContent_Declare(SFML
         SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME} WIN32
 src/main.cpp
 src/Variables.cpp
 src/Colors.cpp
 src/Triangle.cpp
 src/Star.cpp
-src/Slote.cpp 
-src/SloteMachine.cpp
+src/SloteDraw.cpp 
+src/SloteLogic.cpp
 src/MyShape.cpp
 src/Rectangle.cpp
-src/Circle.cpp  "src/TextButton.h" "src/TextButton.cpp" "src/ResourceManager.cpp" "src/State.h" "src/SpinningState.cpp" "src/WaitingState.h" "src/WaitingState.cpp" "src/ShowWinState.h" "src/ShowWinState.cpp"  "src/State.cpp" "src/Combination.h" "src/Combination.cpp" "src/Statistic.h" "src/Statistic.cpp" "src/ResourceManager.h")
+src/Circle.cpp
+src/TextButton.cpp
+src/ResourceManager.cpp
+src/Combination.cpp
+src/Statistic.cpp
+src/SloteMachineLogic.cpp
+src/SloteMachineDraw.cpp
+src/StateLogic.cpp
+src/WaitingStateLogic.cpp
+src/SpinningStateLogic.cpp
+src/ShowWinStateLogic.cpp
+src/GameScene.cpp
+src/DrawScene.cpp
+src/Button.cpp
+src/ButtonRender.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-network sfml-audio)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)

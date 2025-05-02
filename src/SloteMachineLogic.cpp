@@ -1,4 +1,4 @@
-#include "SloteMachine.h"
+#include "SloteMachineLogic.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -11,24 +11,23 @@
 #include "Triangle.h"
 #include "Circle.h"
 #include "Rectangle.h"
-#include "WaitingState.h"
+#include "WaitingStateLogic.h"
 
 using namespace sf;
 using namespace std;
 
-SloteMachine::SloteMachine()
-	:m_Flags{false, false, false}
+SloteMachineLogic::SloteMachineLogic()
 {
 	fillSymbols();
 	fillSlotes();
 	fillAllCombinations();
 	fillWinCombinations();
-	m_Selector = new WaitingState(this, m_Flags);
+	m_Selector = new WaitingStateLogic(this, m_FlagsControl);
 	m_Statistic.setBalance(balance);
 	m_Statistic.setBet(bet);
 }
 
-SloteMachine::~SloteMachine()
+SloteMachineLogic::~SloteMachineLogic()
 {
 	for (const auto& symbol : m_Symbols)
 	{
@@ -38,58 +37,67 @@ SloteMachine::~SloteMachine()
 	{
 		delete slote;
 	}
+	delete m_Selector;
 }
 
-size_t SloteMachine::getCountSlots()
+size_t SloteMachineLogic::getCountSlots()
 {
 	return countSlots;
 }
 
-void SloteMachine::draw(RenderTarget& target)
-{
-	/*for (const auto& slote : m_Slots)
-	{
-		slote->draw(target);
-	}*/
-	m_Selector->draw(target);
-}
 
-void SloteMachine::setState(State* newState)
+void SloteMachineLogic::setState(StateLogic* newState)
 {
+	delete m_Selector;
 	m_Selector = newState;
 }
 
-vector<Slote*>& SloteMachine::getSlots()
+vector<SloteLogic*>& SloteMachineLogic::getSlots()
 {
 	return m_Slots;
 }
 
-int SloteMachine::getCountSymbols()
+int SloteMachineLogic::getCountSymbols()
 {
 	return m_Symbols.size();
 }
 
-void SloteMachine::run(float diff)
+void SloteMachineLogic::run(float diff)
 {
 	m_Selector->update(diff, m_Statistic);
 }
 
-bool SloteMachine::isRunning()
+bool SloteMachineLogic::isRunning()
 {
 	return false;
 }
 
-void SloteMachine::start()
+void SloteMachineLogic::start()
 {
-	m_Flags.startSlote = true;
+	m_FlagsControl.startSlote = true;
 }
 
-void SloteMachine::stop()
+void SloteMachineLogic::stop()
 {
-	m_Flags.stopSlote = true;
+	m_FlagsControl.stopSlote = true;
 }
 
-void SloteMachine::fillSymbols()
+vector<shared_ptr<Drawable>> SloteMachineLogic::getObjects() const
+{
+	return m_Objects;
+}
+
+void SloteMachineLogic::addDrawableObject(shared_ptr<Drawable> obj)
+{
+	m_Objects.emplace_back(obj);
+}
+
+void SloteMachineLogic::clearDrawableObjects()
+{
+	m_Objects.clear();
+}
+
+void SloteMachineLogic::fillSymbols()
 {
 	Star* star = new Star();
 	star->setSize(symbolSize / 2.f, symbolSize);
@@ -118,7 +126,7 @@ void SloteMachine::fillSymbols()
 	}
 }
 
-void SloteMachine::fillSlotes()
+void SloteMachineLogic::fillSlotes()
 {
 	for (int i = 0; i < countSlots; ++i)
 	{
@@ -128,13 +136,13 @@ void SloteMachine::fillSlotes()
 			symbols.emplace_back(symbol->clone());
 		}
 		shuffle(symbols);
-		Slote* newSlote = new Slote(symbols);
+		SloteLogic* newSlote = new SloteLogic(symbols);
 		newSlote->setAccelerate(generateAccelerate());
 		m_Slots.emplace_back(newSlote);
 	}
 }
 
-void SloteMachine::fillWinCombinations()
+void SloteMachineLogic::fillWinCombinations()
 {
 	shuffle(m_AllCombinations);
 	for (int i = 0; i < countWinCombinations; ++i)
@@ -143,12 +151,12 @@ void SloteMachine::fillWinCombinations()
 	}
 }
 
-void SloteMachine::fillAllCombinations()
+void SloteMachineLogic::fillAllCombinations()
 {
 	int totalUniqueCombinations = pow(m_Symbols.size(), countSlots);
 	if (countWinCombinations > totalUniqueCombinations)
 	{
-		throw std::invalid_argument("countWinCombinations exceeds the number of possible unique combinations.");
+		throw invalid_argument("countWinCombinations exceeds the number of possible unique combinations.");
 	}
 	int countSymbols = m_Symbols.size();
 	for (int i = 0; i < totalUniqueCombinations; ++i)
@@ -165,32 +173,23 @@ void SloteMachine::fillAllCombinations()
 	}
 }
 
-float SloteMachine::generateAccelerate()
+float SloteMachineLogic::generateAccelerate()
 {
-	return generateRandomValue(2.f, 5.f);
+	return generateRandomValue(8.f, 20.f);
 }
 
-vector<Combination> SloteMachine::getWinCombinations() const
+vector<Combination> SloteMachineLogic::getWinCombinations() const
 {
 	return m_WinCombinations;
 }
 
-Statistic SloteMachine::getStatistic() const
+Statistic SloteMachineLogic::getStatistic() const
 {
 	return m_Statistic;
 }
 
-
-//void SloteMachine::sloteSpin(float diff)
-//{
-//	for (auto& slote : m_Slots)
-//	{
-//		slote->spin(diff);
-//	}
-//}
-
 template <typename T>
-void SloteMachine::shuffle(vector<T>& vec)
+void SloteMachineLogic::shuffle(vector<T>& vec)
 {
 	for (int i = vec.size() - 1; i > 0; --i)
 	{

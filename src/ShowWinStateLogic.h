@@ -1,28 +1,26 @@
 #pragma once
 #include <vector>
-#include <queue>
 #include <SFML/Graphics.hpp>
 
-#include "State.h"
-#include "WaitingState.h"
+#include "StateLogic.h"
 #include "MyShape.h"
 #include "Combination.h"
 
 enum ShowState
 {
 	checkWin,
-	drawLine,
+	createLine,
 	delaySwitch
 };
 
-class ShowWinState : public State
+class ShowWinStateLogic : public StateLogic
 {
 public:
-	ShowWinState(SloteMachine* machine, SloteControlFlags& flags);
+	ShowWinStateLogic(SloteMachineLogic* machine, ControlSlote& flags);
+	~ShowWinStateLogic();
 	void update(float diff, Statistic& statistic) override;
 	void updateStatistic(Statistic& statistic);
 	bool exit() override;
-	void draw(sf::RenderTarget& target) const override;
 private:
 	void resetFlags();
 	void collectingCombination();
@@ -41,7 +39,5 @@ private:
 	std::vector<std::vector<MyShape*>> m_SymbolsOnDisplay;
 
 	ShowState m_State;
-
-	std::vector<sf::RectangleShape> m_Lines;
 	bool m_NeedSwitch;
 };

@@ -2,12 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <string>
-#include <unordered_map>
 
 class ResourceManager
 {
 public:
 	static ResourceManager& getInstance();
+	~ResourceManager();
 	ResourceManager(const ResourceManager&) = delete;
 	ResourceManager& operator=(const ResourceManager&) = delete;
 	void load();

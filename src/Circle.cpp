@@ -3,8 +3,6 @@
 
 using namespace sf;
 
-
-
 Circle::Circle()
 	:m_Radius(0.f)
 {

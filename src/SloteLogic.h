@@ -1,5 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <vector>
 #include "MyShape.h"
 
@@ -10,38 +9,33 @@ enum class SloteState
 	correctPos
 };
 
-class Slote
+class SloteLogic
 {
 public:
-	Slote(std::vector<MyShape*>& symbols);
-	~Slote();
+	SloteLogic(std::vector<MyShape*> symbols);
+	~SloteLogic();
 	void setAccelerate(const float accelerate);
 	void spin(float diff);
-	bool isSpinStoped();
 	void startSpin();
 	void stopSpin();
-	std::vector<MyShape*> getSymbols() const;
+	bool isSpinStoped();
+	std::vector<MyShape*>& getSymbols();
+	float getOffsetY() const;
 	MyShape* getSymbol(int index) const;
-	void draw(sf::RenderTarget& target) const;
 private:
-	void setPosition();
 	void accelerating(float diff);
 	void deccelerating(float diff);
+	void updateOffset(float diff);
+	void correctPos(float diff);
 
 	bool isAccelerate();
 	bool isDeccelerate();
-
-	void updateOffset(float diff);
-	void correctPos(float diff);
-	float calcY(float numPos) const;
 	SloteState m_State;
 
-	bool m_IsSpinning;
-	int m_Id;
+	bool m_IsCorrectPos;
 	float m_A;
 	float m_V;
 	float m_PosY;
-	bool m_IsCorrectPos;
-	float m_SymbolMargin;
+
 	std::vector<MyShape*> m_Symbols;
 };

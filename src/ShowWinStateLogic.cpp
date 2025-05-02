@@ -1,36 +1,41 @@
-#include "ShowWinState.h"
+#include "ShowWinStateLogic.h"
 
 #include <iostream>
+#include <memory>
 
-#include "WaitingState.h"
-#include "SloteMachine.h"
+#include "WaitingStateLogic.h"
+#include "SloteMachineLogic.h"
 
 using namespace std;
 using namespace sf;
 
 float delay = 1.f;
 
-ShowWinState::ShowWinState(SloteMachine* machine, SloteControlFlags& flags)
-	:State(machine, flags), m_CurrIndex(0), m_NeedSwitch(false), m_curWinCombination(nullptr)
+ShowWinStateLogic::ShowWinStateLogic(SloteMachineLogic* machine, ControlSlote& flags)
+	:StateLogic(machine, flags), m_CurrIndex(0), m_NeedSwitch(false), m_curWinCombination(nullptr)
 {
 	m_State = ShowState::checkWin;
 	collectingCombination();
-	m_WinCombinations = m_Machine->getWinCombinations();
+	m_WinCombinations = m_MachineLogic->getWinCombinations();
 }
 
-void ShowWinState::update(float diff, Statistic& statistic)
+ShowWinStateLogic::~ShowWinStateLogic()
+{
+	m_MachineLogic->clearDrawableObjects();
+}
+
+void ShowWinStateLogic::update(float diff, Statistic& statistic)
 {
 	showWin(diff);
 	updateStatistic(statistic);
 	if (exit())
-	{ 
+	{
 		resetFlags();
-		m_Lines.shrink_to_fit();
-		m_Machine->setState(new WaitingState(m_Machine, m_Flags));
+		m_MachineLogic->setState(new WaitingStateLogic(m_MachineLogic, m_FlagsControl));
 	}
 }
 
-void ShowWinState::updateStatistic(Statistic& statistic)
+void ShowWinStateLogic::updateStatistic(Statistic& statistic)
 {
 	if (m_curWinCombination == nullptr)
 		return;
@@ -40,7 +45,7 @@ void ShowWinState::updateStatistic(Statistic& statistic)
 	m_curWinCombination = nullptr;
 }
 
-bool ShowWinState::exit()
+bool ShowWinStateLogic::exit()
 {
 	if (m_NeedSwitch)
 	{
@@ -50,41 +55,29 @@ bool ShowWinState::exit()
 	return false;
 }
 
-void ShowWinState::draw(RenderTarget& target) const
+void ShowWinStateLogic::resetFlags()
 {
-	for (const auto& slote : m_Machine->getSlots())
-	{
-		slote->draw(target);
-	}
-
-	for (const auto& line : m_Lines)
-	{
-		target.draw(line);
-	}
-	
+	m_FlagsControl.isRunning = false;
+	m_FlagsControl.startSlote = false;
+	m_FlagsControl.stopSlote = false;
 }
 
-void ShowWinState::resetFlags()
+void ShowWinStateLogic::collectingCombination()
 {
-	m_Flags = { false, false ,false };
-}
-
-void ShowWinState::collectingCombination()
-{
-	int countSymbols = m_Machine->getCountSymbols();
+	int countSymbols = m_MachineLogic->getCountSymbols();
 
 	for (int i = 0; i < countSymbols; ++i)
 	{
 		vector<MyShape*> symbols;
-		for (const auto& slote: m_Machine->getSlots())
-		{ 
+		for (const auto& slote : m_MachineLogic->getSlots())
+		{
 			symbols.emplace_back(slote->getSymbol(i));
 		}
 		m_SymbolsOnDisplay.emplace_back(symbols);
 	}
 }
 
-bool ShowWinState::checkWin()
+bool ShowWinStateLogic::checkWin()
 {
 	for (int i = 0; i < m_WinCombinations.size(); ++i)
 	{
@@ -111,9 +104,9 @@ bool ShowWinState::checkWin()
 	return false;
 }
 
-void ShowWinState::fillPositions()
+void ShowWinStateLogic::fillPositions()
 {
-	for (int j = 0; j < m_Machine->getCountSlots(); ++j)
+	for (int j = 0; j < m_MachineLogic->getCountSlots(); ++j)
 	{
 		m_WinPositions.emplace_back(m_SymbolsOnDisplay[m_CurrIndex][j]->getCenter());
 	}
@@ -123,10 +116,11 @@ void ShowWinState::fillPositions()
 	}
 }
 
-void ShowWinState::createLine()
+void ShowWinStateLogic::createLine()
 {
 	vector<Vector2f> points = m_WinPositions;
 	m_WinPositions.clear();
+	m_MachineLogic->clearDrawableObjects();
 	for (size_t i = 0; i < points.size() - 1; ++i)
 	{
 		Vector2f start = points[i];
@@ -136,25 +130,25 @@ void ShowWinState::createLine()
 		float length = sqrt(direction.x * direction.x + direction.y * direction.y);
 		direction /= length;
 
-		RectangleShape line(Vector2f(length, 10.f));
-		line.setOrigin(0, 5.f);
-		line.setPosition(start);
-		line.setFillColor(Color(120, 120, 120));
-		line.setRotation(atan2(direction.y, direction.x) * 180 / 3.14159);
+		auto line  = make_shared<RectangleShape>(Vector2f(length, 10.f));
+		line->setOrigin(0, 5.f);
+		line->setPosition(start);
+		line->setFillColor(Color(120, 120, 120));
+		line->setRotation(atan2(direction.y, direction.x) * 180 / 3.14159);
 
-		m_Lines.push_back(line);
+		m_MachineLogic->addDrawableObject(line);
 	}
 }
 
-void ShowWinState::delaySwitch(float diff)
+void ShowWinStateLogic::delaySwitch(float diff)
 {
 	delay -= diff;
 }
 
-void ShowWinState::showWin(float diff)
+void ShowWinStateLogic::showWin(float diff)
 {
-	if (m_CurrIndex > m_Machine->getCountSymbols() - 1)
-	{
+	if (m_CurrIndex > m_MachineLogic->getCountSymbols() - 1)
+	{ 
 		m_NeedSwitch = true;
 		return;
 	}
@@ -164,7 +158,7 @@ void ShowWinState::showWin(float diff)
 		{
 			if (checkWin())
 			{
-				m_State = ShowState::drawLine;
+				m_State = ShowState::createLine;
 			}
 			else
 			{
@@ -172,7 +166,7 @@ void ShowWinState::showWin(float diff)
 			}
 			break;
 		}
-		case ShowState::drawLine:
+		case ShowState::createLine:
 		{
 			fillPositions();
 			createLine();
@@ -187,7 +181,6 @@ void ShowWinState::showWin(float diff)
 				delay = 1.f;
 				m_State = ShowState::checkWin;
 				m_CurrIndex++;
-				m_Lines.clear();
 			}
 			break;
 		}

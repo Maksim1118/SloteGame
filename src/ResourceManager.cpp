@@ -9,6 +9,11 @@ ResourceManager& ResourceManager::getInstance()
 	return resManager;
 }
 
+ResourceManager::~ResourceManager()
+{
+	delete m_Font;
+}
+
 void ResourceManager::load()
 {
 	if (m_isLoad)

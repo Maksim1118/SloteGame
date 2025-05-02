@@ -1,15 +1,50 @@
 #include "TextButton.h"
 #include "Colors.h"
+#include "ResourceManager.h"
 
 using namespace sf;
+using namespace std;
 
 const Vector2f startSize = { 170.f, 70.f };
 const float blackOut = 0.4f;
+const float startButtonTextSize = 25.f;
 
-TextButton::TextButton(Text& text)
-    :m_Text(text), m_IsHovered(false)
+TextButton::TextButton(const string& str)
+    :m_IsHovered(false)
 {
+    m_Text.setString(str);
+    m_Text.setFont(ResourceManager::getInstance().getFont());
+    m_Text.setCharacterSize(startButtonTextSize);
+    setTextColor(red);
+
+    setFrameColor(lightGray);
+
     setSize(startSize);
+    m_ElementsButton.emplace_back(&m_Shape);
+    m_ElementsButton.emplace_back(&m_Text);
+}
+
+void TextButton::setText(const string& str)
+{
+    m_Text.setString(str);
+    textPos();
+}
+
+void TextButton::setTextColor(const Color& color)
+{
+    m_Text.setFillColor(color);
+}
+
+void TextButton::setTextSize(unsigned int size)
+{
+    m_Text.setCharacterSize(size);
+    textPos();
+}
+
+void TextButton::setTextFont(const sf::Font& font)
+{
+    m_Text.setFont(font);
+    textPos();
 }
 
 bool TextButton::isPos(const sf::Vector2f mousePos) const
@@ -19,6 +54,7 @@ bool TextButton::isPos(const sf::Vector2f mousePos) const
     return mousePos.x > butPos.x && mousePos.x < butPos.x + butSize.width
         && mousePos.y > butPos.y && mousePos.y < butPos.y + butSize.height;
 }
+
 void TextButton::setSize(sf::Vector2f size)
 {
     m_Shape.setSize(size);
@@ -31,7 +67,7 @@ void TextButton::setPosition(sf::Vector2f pos)
     textPos();
 }
 
-void TextButton::setColor(sf::Color color)
+void TextButton::setFrameColor(sf::Color color)
 {
     m_Shape.setFillColor(color);
     m_NormalColor = color;
@@ -59,12 +95,6 @@ void TextButton::update(const sf::Vector2f mousePos)
             m_IsHovered = false;
         }
     }
-}
-
-void TextButton::draw(sf::RenderTarget& target)
-{
-    target.draw(m_Shape);
-    target.draw(m_Text);
 }
 
 void TextButton::textPos()

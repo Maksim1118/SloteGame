@@ -1,15 +1,12 @@
 #pragma once
-#include <vector>
+#include "StateLogic.h"
 
-#include "State.h"
-
-class SpinningState: public State
+class SpinningStateLogic : public StateLogic
 {
 public:
-	SpinningState(SloteMachine* machine, SloteControlFlags& flags);
+	SpinningStateLogic(SloteMachineLogic* machine, ControlSlote& flags);
 	void update(float diff, Statistic& statistic) override;
 	bool exit() override;
-	void draw(sf::RenderTarget& target) const override;
 private:
 	void spin(float diff);
 	void start();

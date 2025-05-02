@@ -1,23 +1,22 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include <vector>
-#include "Slote.h"
+#include <memory>
+#include <SFML/Graphics.hpp>
+#include "SloteLogic.h"
+#include "StateLogic.h"
 #include "MyShape.h"
-#include "State.h"
 #include "Combination.h"
 #include "Statistic.h"
+#include "ControlSlote.h"
 
-class SloteMachine
+class SloteMachineLogic
 {
 public:
-	SloteMachine();
-	~SloteMachine();
+	SloteMachineLogic();
+	~SloteMachineLogic();
 	size_t getCountSlots();
-	void draw(sf::RenderTarget& target);
-	
-	/*void sloteSpin(float diff);*/
-	void setState(State* newState);
-	std::vector<Slote*>& getSlots();
+	void setState(StateLogic* newState);
+	std::vector<SloteLogic*>& getSlots();
 	std::vector<Combination> getWinCombinations() const;
 	Statistic getStatistic() const;
 	int getCountSymbols();
@@ -25,6 +24,9 @@ public:
 	bool isRunning();
 	void start();
 	void stop();
+	std::vector<std::shared_ptr<sf::Drawable>> getObjects() const;
+	void addDrawableObject(std::shared_ptr<sf::Drawable> obj);
+	void clearDrawableObjects();
 private:
 	void fillSymbols();
 	void fillSlotes();
@@ -39,14 +41,15 @@ private:
 	std::vector<Combination> m_WinCombinations;
 	std::vector<Combination> m_AllCombinations;
 
-	SloteControlFlags m_Flags;
-	State* m_Selector;
+	ControlSlote m_FlagsControl;
+	StateLogic* m_Selector;
 
 	Statistic m_Statistic;
 
 	static const size_t countSlots = 3;
 	static const int balance = 800;
-	const int bet = 20;
+	static const int bet = 20;
 	static const size_t countWinCombinations = 60;
-	std::vector<Slote*> m_Slots;
+	std::vector<SloteLogic*> m_Slots;
+	std::vector<std::shared_ptr<sf::Drawable>> m_Objects;
 };
